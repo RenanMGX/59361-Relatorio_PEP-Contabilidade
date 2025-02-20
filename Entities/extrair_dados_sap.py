@@ -34,7 +34,7 @@ class ExtrairDadosSAP(SAPManipulation):
             os.remove(os.path.join(self.__download_path, file))    
         
     @SAPManipulation.start_SAP
-    def ExtrairDados(self, *, centro:str, date:datetime, acumulado:bool, final_date:datetime|None=None):
+    def ExtrairDados(self, *, divisao:str, date:datetime, acumulado:bool, final_date:datetime|None=None):
         if final_date:
             if final_date < date:
                 final_date = None
@@ -50,7 +50,7 @@ class ExtrairDadosSAP(SAPManipulation):
         except:
             pass
         
-        self.session.findById("wnd[0]/usr/ctxtCN_PROJN-LOW").text = centro
+        self.session.findById("wnd[0]/usr/ctxtCN_PROJN-LOW").text = divisao
         self.session.findById("wnd[0]/usr/ctxt$6-KOKRS").text = "GPN"
         self.session.findById("wnd[0]/usr/txt$ZAF").text = str(date.year)
         self.session.findById("wnd[0]/usr/ctxt$ZPI").text = str(date.month)
@@ -68,11 +68,11 @@ class ExtrairDadosSAP(SAPManipulation):
             
             # if text:
             #     print(f'{text} == PEP {centro.upper()}.P  ==> ', (text == f"PEP {centro.upper()}.P"))
-            if text == f"PEP {centro.upper()}.P":
+            if text == f"PEP {divisao.upper()}.P":
                 break
 
             if cont >= 999:
-                raise Exception(f"Não foi encontrado o PEP {centro}.P!")
+                raise Exception(f"Não foi encontrado o PEP {divisao}.P!")
             
             #cont += 1
             
@@ -106,7 +106,7 @@ class ExtrairDadosSAP(SAPManipulation):
         
         self.session.findById("wnd[1]/tbar[0]/btn[0]").press()
         
-        file_path = os.path.join(self.__download_path, date.strftime(f"{centro.upper()}_%Y_%B{((final_date.strftime("_a_%B")) if final_date else "")}_relatoriosPEP.xlsx"))
+        file_path = os.path.join(self.__download_path, date.strftime(f"{divisao.upper()}_%Y_%B{((final_date.strftime("_a_%B")) if final_date else "")}_relatoriosPEP.xlsx"))
         if os.path.exists(file_path):
             Functions.fechar_excel(file_path)
             os.remove(file_path)

@@ -15,5 +15,6 @@ def zipar_dados_da_pasta(list_files:list, *, zip_name:str=""):
                 zf.write(file, os.path.relpath(file,os.path.dirname(file)))
                 
                 
+                
 if __name__ == "__main__":
     pass
