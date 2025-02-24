@@ -2,6 +2,7 @@ from Entities.extrair_dados_sap import ExtrairDadosSAP
 from Entities.dependencies.arguments import Arguments
 from Entities import utils
 from datetime import datetime
+from Entities.informativo import Informativo
 import os
 import json
 
@@ -21,14 +22,18 @@ def carregar_json(*, path:str=os.path.join(os.getcwd(), "args.json"), delete_fil
         args['acumulado']
         if args['final_date']:
             args['final_date'] = datetime.fromisoformat(args['final_date'])
-    except KeyError:
-        raise Exception("Faltam argumentos no arquivo config.json")
+    except KeyError as err:
+        print(err)
+        raise Exception("Faltam argumentos no arquivo args.json")
     return args
 
 class Execute:
     @staticmethod
     def start():
-        argumentos:dict = carregar_json(delete_file=False)
+        Informativo.limpar()
+        Informativo.register("Iniciando a extração de dados do SAP", color='<django:green>')
+        argumentos:dict = carregar_json()
+        Informativo.register(f"Argumentos carregados: {argumentos}", color='<django:green>')
         
         sap = ExtrairDadosSAP()
         sap.limpar_pasta_download()
@@ -36,9 +41,14 @@ class Execute:
         lista_arquivos_projetos = []
         for divisao in argumentos['divisao']:
             try:
+                Informativo.register(f"Extraindo dados da divisão {divisao}", color='<django:blue>')
                 lista_arquivos_projetos.append(sap.ExtrairDados(divisao=divisao[0:4], date=argumentos['date'], acumulado=argumentos['acumulado'], final_date=argumentos['final_date']))
+                Informativo.register(f"   Extração da divisão {divisao} finalizada", color='<django:green>')
             except Exception as e:
+                Informativo.register(f"    Erro ao extrair dados da divisão: {type(e), e}", color='<django:red>')
                 print(type(e), e)
+        
+        Informativo.register("Extração de dados finalizada", color='<django:green>')
         
         if lista_arquivos_projetos:
             zip_path = os.path.join(os.getcwd(), "fileZip")
@@ -49,14 +59,15 @@ class Execute:
                 
             utils.zipar_dados_da_pasta(lista_arquivos_projetos, zip_name=os.path.join(zip_path, datetime.now().strftime("%Y%m%d%H%M%S_projetosPEP.zip")))
         
-        print(lista_arquivos_projetos)
+        Informativo.register("Arquivo Zip Criado", color='<django:green>')
+        
+        #print(lista_arquivos_projetos)
         #import pdb;pdb.set_trace()
         sap.fechar_sap()
+        Informativo.register("Finalizado!", color='<django:green>')
         
         
 if __name__ == "__main__":
-    #print(carregar_json(delete_file=False))
-    
     Arguments({
         "start": Execute.start
     })

@@ -3,6 +3,7 @@ from dependencies.config import Config
 from dependencies.credenciais import Credential
 from dependencies.functions import Functions
 from datetime import datetime
+from informativo import Informativo
 from time import sleep
 import os
 import locale
@@ -55,11 +56,13 @@ class ExtrairDadosSAP(SAPManipulation):
         self.session.findById("wnd[0]/usr/txt$ZAF").text = str(date.year)
         self.session.findById("wnd[0]/usr/ctxt$ZPI").text = str(date.month)
         self.session.findById("wnd[0]/usr/ctxt$ZPF").text = str(final_date.month) if final_date else str(date.month)
+
         self.session.findById("wnd[0]/tbar[1]/btn[8]").press()
         
-        sleep(2)
+        sleep(3)
         
-        #import pdb;pdb.set_trace()
+        if (retorno_error:=self.session.findById("wnd[0]/sbar/pane[0]").text) != "":
+            raise Exception(retorno_error)
         
         #cont = 1
         for cont in range(1, 1000):
