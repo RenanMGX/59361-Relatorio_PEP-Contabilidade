@@ -33,7 +33,7 @@ class Execute:
         Informativo.limpar()
         Informativo.register("Iniciando a extração de dados do SAP", color='<django:green>')
         argumentos:dict = carregar_json()
-        Informativo.register(f"Argumentos carregados: {argumentos}", color='<django:green>')
+        Informativo.register(f"Argumentos carregados", color='<django:green>')
         
         sap = ExtrairDadosSAP()
         sap.limpar_pasta_download()
