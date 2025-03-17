@@ -44,7 +44,7 @@ class Execute:
             for _ in range(1, (NUM_TENTATIVAS +1)):
                 try:
                     Informativo.register(f"Extraindo dados da divisão {divisao}", color='<django:blue>')
-                    lista_arquivos_projetos.append(ExtrairDadosSAP().ExtrairDados(divisao=divisao[0:4], date=argumentos['date'], acumulado=argumentos['acumulado'], final_date=argumentos['final_date']))
+                    lista_arquivos_projetos.append(sap.ExtrairDados(divisao=divisao[0:4], date=argumentos['date'], acumulado=argumentos['acumulado'], final_date=argumentos['final_date']))
                     Informativo.register(f"    Extração da divisão {divisao} finalizada", color='<django:green>')
                     break
                 except Exception as e:
