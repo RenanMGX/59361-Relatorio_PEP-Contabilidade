@@ -48,7 +48,7 @@ class Execute:
                     Informativo.register(f"    Extração da divisão {divisao} finalizada", color='<django:green>')
                     break
                 except Exception as e:
-                    Informativo.register(f"    {_}/{NUM_TENTATIVAS} - Erro ao extrair dados da divisão {divisao}: {type(e), e}", color='<django:red>', register_log=True)
+                    Informativo.register(f"    {_}/{NUM_TENTATIVAS} - Erro ao extrair dados da divisão {divisao}: {type(e), e}", color='<django:yellow>', register_log=True)
                     print(type(e), e)
                 if _ == NUM_TENTATIVAS:
                     Informativo.register(f"    {_}/{NUM_TENTATIVAS} - Não foi possivel extrair o relarotio {divisao}", color='<django:red>', register_log=True)
