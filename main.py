@@ -40,13 +40,18 @@ class Execute:
         
         lista_arquivos_projetos = []
         for divisao in argumentos['divisao']:
-            try:
-                Informativo.register(f"Extraindo dados da divisão {divisao}", color='<django:blue>')
-                lista_arquivos_projetos.append(sap.ExtrairDados(divisao=divisao[0:4], date=argumentos['date'], acumulado=argumentos['acumulado'], final_date=argumentos['final_date']))
-                Informativo.register(f"   Extração da divisão {divisao} finalizada", color='<django:green>')
-            except Exception as e:
-                Informativo.register(f"    Erro ao extrair dados da divisão: {type(e), e}", color='<django:red>')
-                print(type(e), e)
+            NUM_TENTATIVAS = 3
+            for _ in range(1, (NUM_TENTATIVAS +1)):
+                try:
+                    Informativo.register(f"Extraindo dados da divisão {divisao}", color='<django:blue>')
+                    lista_arquivos_projetos.append(ExtrairDadosSAP().ExtrairDados(divisao=divisao[0:4], date=argumentos['date'], acumulado=argumentos['acumulado'], final_date=argumentos['final_date']))
+                    Informativo.register(f"    Extração da divisão {divisao} finalizada", color='<django:green>')
+                    break
+                except Exception as e:
+                    Informativo.register(f"    {_}/{NUM_TENTATIVAS} - Erro ao extrair dados da divisão {divisao}: {type(e), e}", color='<django:red>', register_log=True)
+                    print(type(e), e)
+                if _ == NUM_TENTATIVAS:
+                    Informativo.register(f"    {_}/{NUM_TENTATIVAS} - Não foi possivel extrair o relarotio {divisao}", color='<django:red>', register_log=True)
         
         Informativo.register("Extração de dados finalizada", color='<django:green>')
         

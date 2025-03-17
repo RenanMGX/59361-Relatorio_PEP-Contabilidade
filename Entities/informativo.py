@@ -2,6 +2,7 @@ import os
 import json
 from datetime import datetime
 from typing import Literal
+from dependencies.logs import Logs, traceback
 
 class Informativo:
     path = os.path.join(os.getcwd(), "informativo.json")
@@ -15,13 +16,15 @@ class Informativo:
             return json.load(f)
         
     @staticmethod
-    def register(text:str, color:Literal["", "<django:red>", "<django:yellow>", "<django:green>", "<django:blue>"]= "") -> None:
+    def register(text:str, *, color:Literal["", "<django:red>", "<django:yellow>", "<django:green>", "<django:blue>"]= "", register_log:bool=False) -> None:
         data = Informativo.load()
         text = datetime.now().strftime(f"[%d/%m/%Y %H:%M:%S] - {text} {color}")
         data.append(text)
         with open(Informativo.path, 'w') as f:
             json.dump(data, f)
         print(text)
+        if register_log:
+            Logs().register(status='Report', description=text, exception=traceback.format_exc())
         
     @staticmethod
     def limpar() -> None:
