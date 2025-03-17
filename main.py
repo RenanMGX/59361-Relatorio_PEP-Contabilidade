@@ -35,21 +35,25 @@ class Execute:
         argumentos:dict = carregar_json()
         Informativo.register(f"Argumentos carregados", color='<django:green>')
         
-        sap = ExtrairDadosSAP()
-        sap.limpar_pasta_download()
-        
+        ExtrairDadosSAP().limpar_pasta_download()
+
         lista_arquivos_projetos = []
         for divisao in argumentos['divisao']:
             NUM_TENTATIVAS = 3
             for _ in range(1, (NUM_TENTATIVAS +1)):
+                sap = ExtrairDadosSAP()
                 try:
                     Informativo.register(f"Extraindo dados da divisão {divisao}", color='<django:blue>')
                     lista_arquivos_projetos.append(sap.ExtrairDados(divisao=divisao[0:4], date=argumentos['date'], acumulado=argumentos['acumulado'], final_date=argumentos['final_date']))
                     Informativo.register(f"    Extração da divisão {divisao} finalizada", color='<django:green>')
+                    sap.fechar_sap()
+                    del sap
                     break
                 except Exception as e:
                     Informativo.register(f"    {_}/{NUM_TENTATIVAS} - Erro ao extrair dados da divisão {divisao}: {type(e), e}", color='<django:yellow>', register_log=True)
                     print(type(e), e)
+                sap.fechar_sap()
+                del sap
                 if _ == NUM_TENTATIVAS:
                     Informativo.register(f"    {_}/{NUM_TENTATIVAS} - Não foi possivel extrair o relarotio {divisao}", color='<django:red>', register_log=True)
         
@@ -68,7 +72,7 @@ class Execute:
         
         #print(lista_arquivos_projetos)
         #import pdb;pdb.set_trace()
-        sap.fechar_sap()
+        #sap.fechar_sap()
         Informativo.register("Finalizado!", color='<django:green>')
         
         
