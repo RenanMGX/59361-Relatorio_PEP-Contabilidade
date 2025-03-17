@@ -119,8 +119,10 @@ class ExtrairDadosSAP(SAPManipulation):
 
         self.session.findById("wnd[1]/tbar[0]/btn[0]").press()
         
-        sleep(5)
+        sleep(30)
         
+        Functions.fechar_excel(file_path)
+        sleep(5)
         Functions.fechar_excel(file_path)
         
         #import pdb;pdb.set_trace()
