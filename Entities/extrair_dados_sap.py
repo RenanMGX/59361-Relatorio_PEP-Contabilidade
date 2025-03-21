@@ -62,7 +62,10 @@ class ExtrairDadosSAP(SAPManipulation):
         sleep(3)
         
         if (retorno_error:=self.session.findById("wnd[0]/sbar/pane[0]").text) != "":
-            raise Exception(retorno_error)
+            if "Há mensagens" in retorno_error:
+                pass
+            else:
+                raise Exception(retorno_error)
         
         #cont = 1
         for cont in range(1, 1000):
