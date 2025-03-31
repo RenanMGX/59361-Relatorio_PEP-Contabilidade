@@ -55,7 +55,7 @@ class Execute:
                 sap.fechar_sap()
                 del sap
                 if _ == NUM_TENTATIVAS:
-                    Informativo.register(f"    {_}/{NUM_TENTATIVAS} - Não foi possivel extrair o relarotio {divisao}", color='<django:red>', register_log=True)
+                    Informativo.register(f"    {_}/{NUM_TENTATIVAS} - Não foi possivel extrair o relatorio {divisao}", color='<django:red>', register_log=True)
         
         Informativo.register("Extração de dados finalizada", color='<django:green>')
         
