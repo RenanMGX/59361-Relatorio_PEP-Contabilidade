@@ -122,11 +122,28 @@ class ExtrairDadosSAP(SAPManipulation):
 
         campo.setFocus() #type: ignore
 
-        # import pdb; pdb.set_trace()
         # return
 
         self.session.findById("wnd[0]").sendVKey(2)
 
+        #import pdb; pdb.set_trace()
+        
+        self.session.findById("wnd[0]/tbar[1]/btn[33]").press()
+        
+        for n in range(1, 1000):
+            try:
+                if '/ZCO2' == self.session.findById("wnd[1]/usr/subSUB_CONFIGURATION:SAPLSALV_CUL_LAYOUT_CHOOSE:0500/cntlD500_CONTAINER/shellcont/shell").getCellValue(n, "VARIANT"):
+                    self.session.findById("wnd[1]/usr/subSUB_CONFIGURATION:SAPLSALV_CUL_LAYOUT_CHOOSE:0500/cntlD500_CONTAINER/shellcont/shell").setCurrentCell (n,"VARIANT")
+                    self.session.findById("wnd[1]/usr/subSUB_CONFIGURATION:SAPLSALV_CUL_LAYOUT_CHOOSE:0500/cntlD500_CONTAINER/shellcont/shell").selectedRows = str(n)
+                    self.session.findById("wnd[1]/usr/subSUB_CONFIGURATION:SAPLSALV_CUL_LAYOUT_CHOOSE:0500/cntlD500_CONTAINER/shellcont/shell").clickCurrentCell()
+                    break
+            except:
+                Exception("Não foi encontrado o layout!")
+            if n >= 999:
+                raise Exception("Não foi encontrado o layout!")
+        
+        
+        
         self.session.findById("wnd[0]/usr/cntlGRID1/shellcont/shell/shellcont[1]/shell").contextMenu()
         self.session.findById("wnd[0]/usr/cntlGRID1/shellcont/shell/shellcont[1]/shell").selectContextMenuItem("&XXL")
 
