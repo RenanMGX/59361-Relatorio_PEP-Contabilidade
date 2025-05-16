@@ -5,6 +5,7 @@ from datetime import datetime
 from Entities.informativo import Informativo
 import os
 import json
+import shutil
 
 def carregar_json(*, path:str=os.path.join(os.getcwd(), "args.json"), delete_file:bool=True) -> dict:
     args:dict = {}
@@ -12,7 +13,7 @@ def carregar_json(*, path:str=os.path.join(os.getcwd(), "args.json"), delete_fil
         with open(path) as f:
             args = json.load(f)
         if delete_file:
-            os.remove(path)
+            shutil.rmtree(path)
     else:
         raise Exception("Arquivo args.json não encontrado")
     try:
@@ -64,7 +65,7 @@ class Execute:
             if not os.path.exists(zip_path):
                 os.makedirs(zip_path)
             for file in os.listdir(zip_path):
-                os.remove(os.path.join(zip_path, file))
+                shutil.rmtree(os.path.join(zip_path, file))
                 
             utils.zipar_dados_da_pasta(lista_arquivos_projetos, zip_name=os.path.join(zip_path, datetime.now().strftime("%Y%m%d%H%M%S_projetosPEP.zip")))
         

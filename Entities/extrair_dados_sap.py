@@ -6,6 +6,7 @@ from datetime import datetime
 from informativo import Informativo
 from time import sleep
 import os
+import shutil
 import locale
 locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
 
@@ -32,7 +33,7 @@ class ExtrairDadosSAP(SAPManipulation):
 
     def limpar_pasta_download(self):
         for file in os.listdir(self.__download_path):
-            os.remove(os.path.join(self.__download_path, file))
+            shutil.rmtree(os.path.join(self.__download_path, file))
 
     @SAPManipulation.start_SAP
     def ExtrairDados(self, *, divisao:str, date:datetime, acumulado:bool, final_date:datetime|None=None):
@@ -152,7 +153,7 @@ class ExtrairDadosSAP(SAPManipulation):
         file_path = os.path.join(self.__download_path, date.strftime(f"{divisao.upper()}_%Y_%B{((final_date.strftime("_a_%B")) if final_date else "")}_relatoriosPEP.xlsx"))
         if os.path.exists(file_path):
             Functions.fechar_excel(file_path)
-            os.remove(file_path)
+            shutil.rmtree(file_path)
 
         #import pdb;pdb.set_trace()
 
