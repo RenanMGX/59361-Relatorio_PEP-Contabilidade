@@ -13,7 +13,7 @@ def carregar_json(*, path:str=os.path.join(os.getcwd(), "args.json"), delete_fil
         with open(path) as f:
             args = json.load(f)
         if delete_file:
-            shutil.rmtree(path)
+            os.remove(path)
     else:
         raise Exception("Arquivo args.json não encontrado")
     try:
@@ -65,7 +65,10 @@ class Execute:
             if not os.path.exists(zip_path):
                 os.makedirs(zip_path)
             for file in os.listdir(zip_path):
-                shutil.rmtree(os.path.join(zip_path, file))
+                try:
+                    shutil.rmtree(os.path.join(zip_path, file))
+                except:
+                    os.remove(os.path.join(zip_path, file))
                 
             utils.zipar_dados_da_pasta(lista_arquivos_projetos, zip_name=os.path.join(zip_path, datetime.now().strftime("%Y%m%d%H%M%S_projetosPEP.zip")))
         
