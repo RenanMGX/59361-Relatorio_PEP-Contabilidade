@@ -33,7 +33,10 @@ class ExtrairDadosSAP(SAPManipulation):
 
     def limpar_pasta_download(self):
         for file in os.listdir(self.__download_path):
-            shutil.rmtree(os.path.join(self.__download_path, file))
+            try:
+                shutil.rmtree(os.path.join(self.__download_path, file))
+            except:
+                os.remove(os.path.join(self.__download_path, file))
 
     @SAPManipulation.start_SAP
     def ExtrairDados(self, *, divisao:str, date:datetime, acumulado:bool, final_date:datetime|None=None):
@@ -153,7 +156,10 @@ class ExtrairDadosSAP(SAPManipulation):
         file_path = os.path.join(self.__download_path, date.strftime(f"{divisao.upper()}_%Y_%B{((final_date.strftime("_a_%B")) if final_date else "")}_relatoriosPEP.xlsx"))
         if os.path.exists(file_path):
             Functions.fechar_excel(file_path)
-            shutil.rmtree(file_path)
+            try:
+                shutil.rmtree(file_path)
+            except:
+                os.remove(file_path)
 
         #import pdb;pdb.set_trace()
 
