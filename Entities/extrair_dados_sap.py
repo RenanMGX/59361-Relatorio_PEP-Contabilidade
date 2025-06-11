@@ -1,15 +1,17 @@
 from dependencies.sap import SAPManipulation
 from dependencies.config import Config
 from dependencies.credenciais import Credential
-from dependencies.functions import Functions
+from dependencies.functions import Functions, P
 from datetime import datetime
+from dateutil.relativedelta import relativedelta
 from informativo import Informativo
 from time import sleep
 import os
 import shutil
 import locale
+import multiprocessing as mp
 locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
-
+from .registe_status import *
 
 
 class ExtrairDadosSAP(SAPManipulation):
@@ -17,14 +19,14 @@ class ExtrairDadosSAP(SAPManipulation):
     def download_path(self):
         return self.__download_path
 
-    def __init__(self, download_path:str=os.path.join(os.getcwd(), "Downloads")):
+    def __init__(self, download_path:str=os.path.join(os.getcwd(), "Downloads"), *, new_conection:bool=True):
         if not os.path.exists(download_path):
             os.makedirs(download_path)
 
         self.__download_path:str = download_path
 
         crd:dict = Credential(Config()['credenciais']['sap']).load()
-        super().__init__(user=crd['user'], password=crd['password'], ambiente=crd['ambiente'], new_conection=True)
+        super().__init__(user=crd['user'], password=crd['password'], ambiente=crd['ambiente'], new_conection=new_conection)
 
 
     @SAPManipulation.start_SAP
@@ -177,3 +179,37 @@ class ExtrairDadosSAP(SAPManipulation):
         #import pdb;pdb.set_trace()
 
         return file_path
+    
+    @SAPManipulation.start_SAP
+    def vadiar(self, *, reg_path:str, time_to_change:int=60 * 30):
+        reg = RegisterStatus(reg_path)
+        vadiou = datetime(2000,1,1)
+        try:
+            if reg.read().get('status') != "running":
+                return
+            while True:
+                if datetime.now() >= (vadiou + relativedelta(seconds=int(time_to_change))):
+                    print(P(f"vadiando... "))
+                    self.session.findById("wnd[0]/tbar[0]/okcd").text = "/nsqvi"
+                    self.session.findById("wnd[0]").sendVKey(0)
+                    sleep(2)
+                    self.session.findById("wnd[0]/tbar[0]/okcd").text = "/n"
+                    self.session.findById("wnd[0]").sendVKey(0)
+                    vadiou = datetime.now()    
+                
+                if reg.read().get('status') != "running":
+                    print(P("parando de vadiar"))
+                    self.fechar_sap()
+                    return
+                
+                sleep(5)
+                
+        finally:
+            self.fechar_sap()
+            return 
+        
+        
+        
+
+if __name__ == "__main__":
+    pass
