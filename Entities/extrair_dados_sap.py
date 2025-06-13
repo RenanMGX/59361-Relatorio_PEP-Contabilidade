@@ -164,11 +164,24 @@ class ExtrairDadosSAP(SAPManipulation):
                 os.remove(file_path)
 
         #import pdb;pdb.set_trace()
+        try:
+            if self.session.findById("wnd[0]/titl").text == 'Erro em tempo de execução ABAP - todos os mandantes':
+                tbar = self.session.findById("wnd[0]/sbar").text
+                raise Exception(f'Erro em tempo de execução ABAP - todos os mandantes - {tbar}')
+        except:
+            pass
 
         self.session.findById("wnd[1]/usr/ctxtDY_PATH").text = os.path.dirname(file_path)
         self.session.findById("wnd[1]/usr/ctxtDY_FILENAME").text = os.path.basename(file_path)
 
         self.session.findById("wnd[1]/tbar[0]/btn[0]").press()
+        
+        try:
+            if self.session.findById("wnd[0]/titl").text == 'Erro em tempo de execução ABAP - todos os mandantes':
+                tbar = self.session.findById("wnd[0]/sbar").text
+                raise Exception(f'Erro em tempo de execução ABAP - todos os mandantes - {tbar}')
+        except:
+            pass
 
         sleep(30)
 

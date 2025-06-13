@@ -77,7 +77,14 @@ class Execute:
                     sap = ExtrairDadosSAP(new_conection=False)
                     try:
                         Informativo.register(f"Extraindo dados da divisão {divisao}", color='<django:blue>')
-                        lista_arquivos_projetos.append(sap.ExtrairDados(divisao=divisao[0:4], date=argumentos['date'], acumulado=argumentos['acumulado'], final_date=argumentos['final_date']))
+                        try:
+                            lista_arquivos_projetos.append(sap.ExtrairDados(divisao=divisao[0:4], date=argumentos['date'], acumulado=argumentos['acumulado'], final_date=argumentos['final_date']))
+                        finally:
+                            try:
+                                tbar = sap.session.findById("wnd[0]/sbar").text
+                                if tbar:
+                                    Informativo.register(f"    Mensagem de erro no Tbar do SAP: {tbar}")
+                            
                         Informativo.register(f"    Extração da divisão {divisao} finalizada", color='<django:green>')
                         sap.fechar_sap()
                         del sap
@@ -116,11 +123,23 @@ class Execute:
                 pass
         reg.register('stopped')
         return
+    
+    @staticmethod
+    def teste():
+        path = valid_status_path()
+        reg = RegisterStatus(path)
+        try:
+            Execute.principal_task(path)
+        finally:
+            reg.delete()
+        
+        
         
         
 if __name__ == "__main__":
     mp.freeze_support()
     Arguments({
-        "start": Execute.start
+        "start": Execute.start,
+        'teste': Execute.teste
     })
     
