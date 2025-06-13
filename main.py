@@ -84,6 +84,8 @@ class Execute:
                                 tbar = sap.session.findById("wnd[0]/sbar").text
                                 if tbar:
                                     Informativo.register(f"    Mensagem de erro no Tbar do SAP: {tbar}")
+                            except:
+                                pass
                             
                         Informativo.register(f"    Extração da divisão {divisao} finalizada", color='<django:green>')
                         sap.fechar_sap()
