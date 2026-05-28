@@ -166,9 +166,22 @@ class SAPManipulation():
             self.__session: win32com.client.CDispatch
             if not self.using_active_conection:
                 try:
+               
                     if not self.__verificar_sap_aberto():
-                        subprocess.Popen(r"C:\Program Files (x86)\SAP\FrontEnd\SapGui\saplogon.exe")
-                        sleep(5)
+                        import os
+                        if os.path.exists(r'C:\Program Files\SAP\FrontEnd\SAPGUI\saplogon.exe'):
+                            subprocess.Popen(r"C:\Program Files\SAP\FrontEnd\SAPGUI\saplogon.exe")
+                            
+                        elif os.path.exists(r"C:\Program Files (x86)\SAP\FrontEnd\SapGui\saplogon.exe"):
+                            subprocess.Popen(r"C:\Program Files (x86)\SAP\FrontEnd\SapGui\saplogon.exe")
+                            
+                        else:
+                            raise Exception("Não foi possível encontrar o executável do SAP Logon. Verifique se o SAP está instalado corretamente.")
+                        for _ in range(30):
+                            sleep(2)
+                            if self.__verificar_sap_aberto():
+                                sleep(5)
+                                break
                     
                     SapGuiAuto: win32com.client.CDispatch = win32com.client.GetObject("SAPGUI")# type: ignore
                     application: win32com.client.CDispatch = SapGuiAuto.GetScriptingEngine# type: ignore
